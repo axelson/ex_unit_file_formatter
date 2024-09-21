@@ -13,7 +13,7 @@ defmodule ExUnitFileFormatter do
 
   @impl true
   def handle_cast({:suite_finished, _times_us}, state) do
-    print_failed_files(state)
+    print_results(state)
     {:noreply, state}
   end
 
@@ -46,7 +46,7 @@ defmodule ExUnitFileFormatter do
     Map.put(state, :failed_files, failed_files_map)
   end
 
-  defp print_failed_files(%{failed_files: failed_files_map}) do
+  defp print_results(%{failed_files: failed_files_map}) do
     failed_file_list =
       failed_files_map
       |> Map.to_list()
