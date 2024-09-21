@@ -12,7 +12,7 @@ defmodule ExUnitFileFormatter do
   end
 
   @impl true
-  def handle_cast({:suite_finished, _run_us, _load_us}, state) do
+  def handle_cast({:suite_finished, _times_us}, state) do
     print_failed_files(state)
     {:noreply, state}
   end
@@ -31,12 +31,18 @@ defmodule ExUnitFileFormatter do
   end
 
   @impl true
+  def handle_cast({:sigquit, modules}, state) do
+    IO.puts("SIGQUIT with modules #{inspect(modules)}")
+    {:noreply, state}
+  end
+
+  @impl true
   def handle_cast(_event, state) do
     {:noreply, state}
   end
 
   defp record_file_failed(%{failed_files: failed_files_map} = state, file) do
-    failed_files_map = Map.update(failed_files_map, file, 1, & &1 + 1)
+    failed_files_map = Map.update(failed_files_map, file, 1, &(&1 + 1))
     Map.put(state, :failed_files, failed_files_map)
   end
 
@@ -49,11 +55,14 @@ defmodule ExUnitFileFormatter do
       end)
 
     if length(failed_file_list) > 0 do
-      IO.puts "\nFailed Files:"
+      IO.puts("\nFailed Files:")
+
       failed_file_list
       |> Enum.each(fn {file, count} ->
         IO.puts("#{count}: #{file}")
       end)
+    else
+      IO.puts("\nTests all finished successfully")
     end
   end
 end
