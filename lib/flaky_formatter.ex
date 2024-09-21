@@ -155,9 +155,10 @@ defmodule FlakyFormatter do
         test_failures: test_failures
     }
 
-    IO.puts("Test suite finished (successful?: #{successful?})")
-    unless Enum.empty?(state.test_failures) do
-      IO.puts("Failures:")
+    if successful? do
+      IO.puts("Test suite finished without errors")
+    else
+      IO.puts("Test suite finished with errors:")
       for test_failure <- state.test_failures do
         IO.puts("- #{test_failure.id}")
       end
